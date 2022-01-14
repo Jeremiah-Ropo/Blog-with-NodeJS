@@ -29,26 +29,24 @@ const Post = mongoose.model('Post', blogSchema)
 
 app.get("/", function(req, res) {
   Post.find({}, function(err, post){
-    res.render('home', {startingContent: homeStartingContent,
-      posts:post});
+    if (err){
+      console.log(err.message)
+    }else{
+      res.render('home', {startingContent: homeStartingContent,
+        posts:post});
+    }
+
   })
  
 });
 
 
 app.get('/posts/:postId', function (req, res) {
-  const requestTitle = _.lowerCase(req.params.postId)
-    
-  posts.forEach(function(post){
-    const storedTitle = _.lowerCase(post.topic)
-    const content = post.content
-    const topic = post.topic
-    
-    if (storedTitle === requestTitle) {
-      res.render('post', {posts:blogs, reqTitle:requestTitle, content:content, topic:topic})
-    }
+  const requestedId = req.params.postId
+  Post.findOne({_id:requestedId}, function(err,post){
+   res.render("post", {topic:post.Topic, content:post.Content}) 
   })
-
+  console.log(requestedId)
 })
 
 app.get("/about", function(req, res) {
@@ -77,8 +75,14 @@ app.post('/compose', function(req, res){
     Topic: Topic,
     Content: Content
   });
-  post.save()
-  res.redirect('/')
+  post.save(function(err){
+    if(!err){
+      res.redirect('/')
+    }else{
+      res.render(err.message)
+    }
+  })
+
 })
 
 
