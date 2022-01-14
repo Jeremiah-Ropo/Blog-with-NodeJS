@@ -75,19 +75,8 @@ app.post('/compose', function(req, res){
     Topic: Topic,
     Content: Content
   });
-
-  if (Post.Topic === 0){
-    Post.insertMany(compose, function(err){
-      if (err){
-        console.log(err.message);
-      }else{
-        console.log('Successful');
-      }
-      res.redirect("/");
-    })
-  }else{
-    res.redirect("/compose");
-  }
+  compose.save()
+  res.redirect('/')
 })
 
 
